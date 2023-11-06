@@ -1247,10 +1247,13 @@ def sum_primes_under(n):
     return sum([i if is_prime(i) else 0 for i in range(2, n)])
 
 
-def sum_primes_nth(n: int, num=2):
+def sum_primes_nth(n: int):
+    if n < 2:
+        return 0
+    if is_prime(n):
+        return n + sum_primes_nth(n-1)
+    return sum_primes_nth(n-1)
     
-    
-
 
 def distinct(xs: list):
     """
