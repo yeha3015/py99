@@ -639,8 +639,8 @@ def list_randoms_aux(n, m, xs):
 
 
 import random
-import sys
-sys.setrecursionlimit(15000)
+# import sys
+# sys.setrecursionlimit(15000)
 # pythonのrecursionの上限が1000な関係で、most_divisors(1000)が動かない。
 # recursionlimitの上限を2000に変えてあげる。許して。
 
@@ -1247,13 +1247,78 @@ def sum_primes_under(n):
     return sum([i if is_prime(i) else 0 for i in range(2, n)])
 
 
-def sum_primes_nth(n: int):
-    if n < 2:
-        return 0
-    if is_prime(n):
-        return n + sum_primes_nth(n-1)
-    return sum_primes_nth(n-1)
+import sys
+sys.setrecursionlimit(15000)
+
+def sum_primes_nth2(n: int, num=2, ret=0):
+    """
+    n番目までの素数和を返す。
+    ただし、2個目の引数は補助用。
+    基本的にこのような使い方をするべきではない。
+    >>> sum_primes_nth(4)
+    17
+    >>> sum_primes_nth(5)
+    28
+    個数nが0になるまで、ループする。
+    素数じゃないのが混じらないように、今の数をnで手伝ってあげる。
+    """
+    if n < 1:
+        return ret
+    if is_prime(num):
+        return sum_primes_nth2(n-1, num+1, ret+num)
+    return sum_primes_nth2(n, num+1, ret)
     
+
+def sum_primes_nth(n):
+    """
+    n番目までの素数和を返す。
+    >>> sum_primes_nth(4)
+    17
+    >>> sum_primes_nth(5)
+    28
+    個数が1個未満なら0,最初の素数として2を初期値にしておく。
+    numが素数なら追加、そうではなければnumを2ずつ増やす。
+    面白い解答、考え中。
+    """
+    if n < 1:
+        return 0
+    ret = 2
+    num = 3
+    for i in range(1, n):
+        while True:
+            if is_prime(num):
+                print(num)
+                ret += num
+                num += 2
+                break
+            num += 2
+    return ret
+
+
+def factor_integer(n: int):
+    """
+    nを素因数分解する関数。
+    >>> factor_integer(4)
+    [2, 2]
+    >>> factor_integer(2147483647)
+    [2147483647]
+    3以下なら、そのまま返す。
+    nが素数になるまで、2割り、3割りをひたすらしていく。
+    """
+    if n < 4:
+        return [n]
+    num = 2
+    ret = []
+    while not is_prime(n):
+        while n % num == 0:
+            ret.append(num)
+            n = n // num
+        num += 1
+        while not is_prime(num):
+            num += 1
+    ret.append(n)
+    return ret
+
 
 def distinct(xs: list):
     """
