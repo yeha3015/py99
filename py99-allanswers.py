@@ -1247,8 +1247,8 @@ def sum_primes_under(n):
     return sum([i if is_prime(i) else 0 for i in range(2, n)])
 
 
-import sys
-sys.setrecursionlimit(15000)
+# import sys
+# sys.setrecursionlimit(15000)
 
 def sum_primes_nth2(n: int, num=2, ret=0):
     """
@@ -1318,6 +1318,64 @@ def factor_integer(n: int):
             num += 1
     ret.append(n)
     return ret
+
+
+def times_n_rec(xs, n):
+    """
+    リスト各要素をn倍して返す。
+    >>> times_n([1, 2, 3], 2)
+    [2, 4, 6]
+    >>> times_n(["a", "b"], 2)
+    ["aa", "bb"]
+    文字列も*演算子でいい感じにできるってことが出題意図かな？
+    この辺で、リスト内包表現か、再帰が使えるとオシャレ。
+    せっかくここまでやったんだから、色々使えるようになるといいね。
+    """
+    if xs == []:
+        return []
+    return [xs[0] * n] + times_n_rec(xs[1:], n)
+
+
+def times_n_lst(xs: list, n: int):
+    """
+    リスト内包表現バージョン。
+    きれいに収まる。
+    """
+    return [x * n for x in xs]
+
+
+def times_n(xs: list, n: int):
+    """
+    ループバージョン。
+    内包表現に比べて、煩わしくね？って感じ。
+    せっかくpythonやるなら、内包表現で書けるようになりたい。
+    """
+    ret = []
+    for i in xs:
+        ret += [i * n]
+    return ret
+
+
+def even_index(xs: list):
+    """
+    リストの偶数要素を抜き出す。ただし、0番目も含む。
+    >>> even_index([0, 1, 2])
+    [0, 2]
+    >>> even_index(["a", "b", "c"])
+    ["a", "b"]
+    74と同じノリ。
+    """
+    if xs == []:
+        return []
+    return [xs[0]] + even_index(xs[2:])
+
+
+def evens_only(xs: list):
+    if xs == []:
+        return []
+    if is_even(xs[0]):
+        return xs[0] + evens_only(xs[1:])
+    return evens_only(xs[1:])
 
 
 def distinct(xs: list):
