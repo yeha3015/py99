@@ -1371,11 +1371,66 @@ def even_index(xs: list):
 
 
 def evens_only(xs: list):
+    """
+    リストの偶数だけを取り出す。
+    >>> evens_only([1, 2, 4, 3])
+    [2, 4]
+    >>> evens_only([1])
+    []
+    再帰で。74, 75と同じような感じ。
+    """
     if xs == []:
         return []
     if is_even(xs[0]):
-        return xs[0] + evens_only(xs[1:])
+        return [xs[0]] + evens_only(xs[1:])
     return evens_only(xs[1:])
+
+
+def repeat_item(item, m: int):
+    """
+    itemをm個詰めたリストを返す関数。
+    >>> repeat_item(0, 3)
+    [0, 0, 0]
+    >>> repeat_item("abc", 2)
+    ["abc", "abc"]
+    一番普通の解き方。python君は賢いので、-1とか考慮しなくていいらしい。
+    """
+    return [item] * m
+
+
+def repeat_item_lst(item, m: int):
+    """
+    リスト内包表現バージョン。
+    for文のiがいらない時は_にすると、いい。
+    """
+    return [item for _ in range(0, m)]
+
+
+def repeat_item_rec(item, m: int):
+    """
+    再帰バージョン。
+    まあ、この問題では使わなくていいかな。
+    """
+    if m <= 0:
+        return []
+    return [item] + repeat_item_rec(item, m - 1) 
+
+
+def zip_(xs: list, ys: list):
+    """
+    リストの要素をそれぞれzipする。
+    ただし、必ずxsとysの個数は等しくする必要がある。
+    >>> zip_([1, 3, 4], [1, 3, 5])
+    [[1, 1], [3, 3], [4, 5]]
+    >>> zip_([1], ["a"])
+    [[1, "a"]]
+    リストの要素数が違ったらエラーを返してもいいのだが、
+    再帰するたびに呼ばれると面倒くさい。補助関数にするのもめんどくさいので、諦め。
+    後は普通に再帰するだけ。
+    """
+    if xs == []:
+        return []
+    return [[xs[0], ys[0]]] + zip_(xs[1:], ys[1:])
 
 
 def distinct(xs: list):
