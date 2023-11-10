@@ -1433,6 +1433,74 @@ def zip_(xs: list, ys: list):
     return [[xs[0], ys[0]]] + zip_(xs[1:], ys[1:])
 
 
+def partition(n: int, xs: list):
+    """
+    リストの要素をn個ずつに分割する関数。
+    >>> partition(2, [1, 2, 3, 4])
+    [[1, 2], [3, 4]]
+    >>> partition(3, [1, 2, 3, 4, 5, 6])
+    [[1, 2, 3], [4, 5, 6]]
+    再帰で。これならリストの要素数がnの倍数じゃなくても返してくれる。
+    """
+    if xs == []:
+        return []
+    return [xs[0:n]] + partition(n, xs[n:])
+
+
+def flatten(xss: list):
+    """
+    多次元リストの次数を一つ下げる関数。
+    >>> flatten([[1, 2], [3, 4]])
+    [1, 2, 3, 4]
+    >>> flatten([[[1, 2], 1], [3, 4]])
+    [[1, 2], 1, 3, 4]
+    xssの各要素iがリストか、type(i)で判定。
+    既に一次元リストであるか？という判定については、
+    ・xssとretが同一かどうか調べる
+    ・そもそも一番最初に平らかどうか調べる
+    などあるが、xssを2回探索することになるので避けたかった。
+    もうちょっとうまくやる方法はありそう。
+    """
+    ret = []
+    err = 0
+    for i in xss:
+        if type(i) is list:
+            ret += i
+            err += 1
+        else:
+            ret += [i]
+    if err == 0:
+        raise AttributeError("flatten(xss)", "The argument is already flatten")
+    return ret
+
+
+def commons_aux(xs: list, ys: list):
+    """
+    commonsの補助関数。
+    xs[0]がysにあれば追加、そうでなければパス。
+    """
+    if xs == []:
+        return []
+    if xs[0] in ys:
+        return [xs[0]] + commons_aux(xs[1:], ys)
+    return commons_aux(xs[1:], ys)
+
+
+def commons(xs: list, ys: list):
+    """
+    xsとys二ともに含まれる要素を返す関数。
+    >>> commons([1, 2, 3], [1, 3, 5])
+    [1, 3]
+    >>> commons([1, 3], [2, 4])
+    []
+    range関数で与えられることが多いので、listとして処理できるように変換。
+    ysについては、len(xs)だけ調査されるので、set()で重複解消。
+    後は補助関数に。
+    """
+    ys = list(set(list(ys)))
+    return commons_aux(list(xs), ys)
+
+
 def distinct(xs: list):
     """
     重複を除いて返す関数。ただし、順番は保証しない。
@@ -1455,6 +1523,32 @@ def join_distinctly(xs: list, ys: list):
     リストを演算子+で結合して、distinctに投げ込む。
     """
     return distinct(xs + ys)
+
+
+def dupli(xs: list, n=2): #repli()
+    """
+    xsの各要素をn個に増やす。初期値は2
+    >>> dupli([1, 2, 3])
+    [1, 1, 2, 2, 3, 3]
+    >>> dupli([[1], 2, [3, 4]])
+    [[1], [1], 2, 2, [3, 4], [3, 4]]
+    repeat_itemで要素をn倍する。後は再帰。
+    """
+    if xs == []:
+        return []
+    return repeat_item(xs[0], n) + dupli(xs[1:], n)
+
+
+def repli(xs: list, n: int):
+    """
+    xsの要素をn個に増やす。
+    >>> repli([1, 2], 3)
+    [1, 1, 1, 2, 2, 2]
+    >>> repli(["a", "b"], 3)
+    ["a", "a", "a", "b", "b", "b"]
+    dupli()でもう作っちゃってた。丸投げしよ。
+    """
+    return dupli(xs, n)
 
 
 def is_square(n: int):
