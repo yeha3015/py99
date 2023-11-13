@@ -1,6 +1,5 @@
 import math
 
-#aaaaaaaaaaaaaaaa
 
 def eqn2(a, b, c):
     """
@@ -42,7 +41,7 @@ def ipower(x, y: int):
     16
     >>> ipower(10, 2)
     100
-    再帰処理。x^n = x*(x^n) =x*x*(x^n)となるはず。
+    再帰処理。x^n = x*(x^n-1) =x*x*(x^n-2)となるはず。
     """
     if y == 0:
         return 1
@@ -462,7 +461,7 @@ def reverse_str(s):
     """
     if s == "":
         return ""
-    return s[-1] + reverse_str(s[0:len(s)-1])
+    return s[-1] + reverse_str(s[0:-1])
 
 
 def find_char(s, c):
@@ -952,7 +951,7 @@ def mul_lst(l: list):
     mul = 1
     for i in l:
         mul *= i
-    return i
+    return mul
 
 
 def lst_double(l1: list, l2: list):
@@ -1311,14 +1310,15 @@ def factor_integer(n: int):
         return [n]
     num = 2
     ret = []
-    while not is_prime(n):
+    while not n == 1 and not is_prime(n):
         while n % num == 0:
             ret.append(num)
             n = n // num
         num += 1
         while not is_prime(num):
             num += 1
-    ret.append(n)
+    if n != 1:
+        ret.append(n)
     return ret
 
 
@@ -1612,6 +1612,87 @@ def compress2(xs: list):
     return zip_(dedupe(xs), compress2_aux(xs, None, []))
 
 
+def expand(xss: list):
+    """
+    compress()の逆操作を行う関数。
+    >>> expand([[1, 2], ["a", 2]])
+    [1, 1, "a", "a"]
+    >>> expand([[], 1], [[2, 2]])
+    [[], 2, 2]
+    リスト内包表現と再帰。
+    最初の要素から順に展開していく。
+    """
+    if xss == []:
+        return []
+    return [xss[0][0] for _ in range(xss[0][1])] + expand(xss[1:])
+
+
+def doubledlist_qsort(xss: list):
+    """
+    2重リストの1番目の要素についてクイックソートを行う関数。
+    ただし、2番目の要素についてはソーティングを行わない。
+    """
+    if len(xss) < 1:
+        return xss
+    pivot = xss[0]
+    left = []
+    right = []
+    for i in xss[1:]:
+        if i[0] <= pivot[0]:
+            left += [i]
+        else:
+            right += [i]
+    return doubledlist_qsort(left) + [pivot] + doubledlist_qsort(right)
+
+
+def compress_indexone(xss: list):
+    """
+    2重リストの一番目のインデックスが同一なものをリスト化して返す関数。
+    """
+    if xss == []:
+        return []
+    seed = xss[0]
+    tmp = [xss[0]]
+    for i in range(1, len(xss)):
+        if xss[i][0] != seed[0]:
+            return [tmp] + compress_indexone(xss[i:])
+        tmp += [xss[i]]
+    return [tmp]
+    
+
+def max_of_index(xss: list, n: int):
+    """
+    xssのn番目の要素について、最大のもののみを返す関数。
+    """
+    max = xss[0]
+    for i in xss[1:]:
+        if i[n] >= max[n]:
+            max = i
+    return [max]
+
+
+def lcm_all(xs: list):
+    """
+    リストxsに含まれる数の最小公倍数を返す関数。
+    >>> lcm_all(range(1, 11))
+    2520
+    >>> lcm_all(range(1, 21))
+    232792560
+    1~nまでの全ての整数で割り切れる最小の整数<=>1~nの最大公約数。
+    factor_integerで各数を素因数分解、後のためにcompress。
+    各インデックスの1番目の数についてソートし、さらにそれぞれについてリスト化する。
+    そのリストについて、最大数を取得し、expandで展開、mul_lstでかけ合わせる。
+    """
+    lst = []
+    for i in xs:
+        lst += compress(factor_integer(i))
+    lst = compress_indexone(doubledlist_qsort(lst))
+    ret = []
+    for i in lst:
+        ret += max_of_index(i, 1)
+    return mul_lst(expand(ret))
+
+
 def is_square(n: int):
     """
     全探索より二分探索で。
@@ -1628,6 +1709,92 @@ def is_square(n: int):
         else:
             max = avg
     return min * min == n
+
+
+def is_cubic(n: int):
+    """
+    nが立方数か判別する関数。
+    >>> is_cubic(1000)
+    True
+    >>> is_cubic(6)
+    False
+    is_square()と一緒。
+    """
+    if n < 2:
+        return True
+    min = 0
+    max = n
+    while min + 1 < max:
+        avg = (min + max) // 2
+        if avg * avg * avg <= n:
+            min = avg
+        else:
+            max = avg
+    return min * min * min == n
+
+
+def list_square_sum(n: int):
+    """
+    2つの2状和で表されるかどうか調べる。
+    ただし、T/Fで返すのではなく、そうなる数のリストを返す。
+    >>> list_square_sum(3)
+    []
+    >>> list_square_sum(100)
+    [[0, 100], [36, 64]]
+    なんだかナンセンスな書き方に。
+    おとなしく全探索した。
+    """
+    i, j = 0, 0
+    i2, j2 = 0, 0
+    ret = []
+    while i2 <= n:
+        while j2 <= n:
+            if i2 + j2 == n:
+                ret.append([i2, j2])
+            j += 1
+            j2 = j * j
+        i += 1
+        i2 = i * i
+        j = i
+        j2 = j * j
+    return ret
+
+
+def square_cubic_old(n: int):
+    """
+    n未満で、立方数かつ平方数の最大の数を返す関数。
+    >>> square_cubic(10)
+    1
+    >>> square_cubic(1000)
+    729
+    素直に全探索するパターン。
+    """
+    for i in range(n - 1, 0, -1):
+        if is_cubic(i) and is_square(i):
+            return i
+    return 1
+
+
+def square_cubic(n):
+    """
+    n未満で、立方数かつ平方数の最大の数を返す関数。
+    >>> square_cubic(10)
+    1
+    >>> square_cubic(1000)
+    729
+    平方数かつ立方数は六乗数であるべき。
+    順に小さい方から計算、nを超えない最大数を返す。
+    """
+    i = 1
+    prev = 1
+    while True:
+        six_i = ipower(i, 6)
+        if six_i >= n:
+            return prev
+        prev = six_i
+        i += 1
+
+print(square_cubic(1000000))
 
 
 def fibo(n: int):
