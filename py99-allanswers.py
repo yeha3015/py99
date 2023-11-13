@@ -1794,8 +1794,6 @@ def square_cubic(n):
         prev = six_i
         i += 1
 
-print(square_cubic(1000000))
-
 
 def fibo(n: int):
     """
@@ -1810,3 +1808,33 @@ def fibo(n: int):
     return fibo(n - 1) + fibo(n - 2)
 
 
+def fast_fibo(n: int):
+    """
+    フィボナッチ数列を早く計算する。
+    >>> fast_fibo(9)
+    34
+    >>> fast_fibo(30)
+    832040
+    1から順に計算していく。
+    さっきの問題は、上から計算しているから、同じ計算を複数回していた。
+    """
+    if n < 1:
+        return n
+    f_lst = [0, 1]
+    for _ in range(2, n + 1):
+        f_lst += [f_lst[-1] + f_lst[-2]]
+    return f_lst[-1]
+
+
+def fibo_over(n):
+    """
+    
+    """
+    if n <= 1:
+        return n
+    f_lst = [0, 1]
+    while True:
+        f_lst += [f_lst[-1] + f_lst[-2]]
+        if f_lst[-1] > n:
+            return len(f_lst) - 1
+        
