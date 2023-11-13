@@ -1,5 +1,7 @@
 import math
 
+#aaaaaaaaaaaaaaaa
+
 def eqn2(a, b, c):
     """
     二次方程式の解を返す関数。
