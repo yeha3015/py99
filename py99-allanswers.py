@@ -1551,6 +1551,65 @@ def repli(xs: list, n: int):
     return dupli(xs, n)
 
 
+def dedupe(xs: list, bef=None):
+    """
+    リストの連続した要素を除いて返す関数。
+    >>> dedupe([1, 2, 2, 3, 1])
+    [1, 2, 3, 1]
+    >>> dedupe([[1, 2], [1, 2], 1])
+    [[1, 2], 1]
+    あまり推奨できないが、befに初期値Noneを定めておく。
+    xs[0]とbefが一緒ならば要素を追加せず、そうでないならば要素を追加。
+    あとは再帰で全要素を探索。
+    """
+    if xs == []:
+        return []
+    if bef == xs[0]:
+        return dedupe(xs[1:], xs[0])
+    return [xs[0]] + dedupe(xs[1:], xs[0])
+
+
+def compress(xs: list):
+    """
+    リストxsを圧縮する関数。
+    >>> compress([1, 1, 1, 2, 3, 3])
+    [[1, 3], [2, 1], [3, 3]]
+    >>> compress([[1, 2], [1, 2]])
+    [[1, 2], 1]
+    前の要素と同じならカウントを増やし、そうでなければ新しいインデックスを追加。
+    """
+    if xs == []:
+        return []
+    n = xs[0]
+    ret = [[xs[0], 1]]
+    for i in xs[1:]:
+        if i == n:
+            ret[-1][1] += 1
+        else:
+            ret += [[i, 1]]
+            n = i
+    return ret
+
+
+def compress2_aux(xs, bef, ret):
+    if xs == []:
+        return ret
+    if bef == xs[0]:
+        ret[-1] += 1
+        return compress2_aux(xs[1:], bef, ret)
+    else:
+        return compress2_aux(xs[1:], xs[0], ret + [1])
+
+
+def compress2(xs: list):
+    """
+    変な解法。2回全探索するので遅い、非推奨。
+    dedupe()で重複を解消したものを、compress2_aux()で要素数を探索。
+    zip()で要素をまとめる。
+    """
+    return zip_(dedupe(xs), compress2_aux(xs, None, []))
+
+
 def is_square(n: int):
     """
     全探索より二分探索で。
