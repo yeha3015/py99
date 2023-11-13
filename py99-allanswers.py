@@ -323,6 +323,19 @@ def sum2(n, m):
     return n*n + sum2(n+1, m)
 
 
+def sum3(n, m):
+    """
+    nからmまでの3乗和を求める関数。
+    >>> sum3(0, 2)
+    9
+    普通の再帰で。
+    大きな数だったら末尾再帰のほうがベター。
+    """
+    if n > m:
+        return 0
+    return n*n*n  + sum3(n + 1, m)
+
+
 def sum_evens(n, m):
     """
     nからmまでの偶数和を求める関数。
@@ -345,6 +358,14 @@ def sum_evens_aux(n, m):
     if n > m:
         return 0
     return n + sum_int(n+2, m)
+
+
+def sum_odds(n, m):
+    """
+    n~mの奇数和を求める。
+    sum_int()からsum_evens()を引けばいいはず。
+    """
+    return sum_int(n, m) - sum_evens(n, m)
 
 
 def fz(n):
@@ -376,6 +397,16 @@ def sum_fz(n, m):
     if n > m:
         return 0
     return fz(n) + sum_fz(n + 1, m)
+
+
+def sum_fz100(n: int):
+    """
+    fz(n)からfz(100)の和を返す関数。
+    100以上は例外を投げて、そうでなければ前に作ったsum_fz()に投げる。
+    """
+    if n > 100:
+        raise ValueError("sum_fz100(): The argument must be smaller than 100")
+    return sum_fz(n, 100)
 
 
 def sun_tzu():
@@ -524,6 +555,38 @@ def initial(s):
     "".join()でstrがたに戻してリターン。
     """
     return "".join([i[0] for i in s.split()])
+
+
+def split_str_list(s):
+    tmp = []
+    ret = []
+    for i in s:
+        if i == " ":
+            ret += [tmp]
+            tmp = []
+        else:
+            tmp += [i]
+    return ret + [tmp]
+
+
+def to_uppers(s):
+    """
+    各単語の頭文字を大文字にする。
+    >>> to_uppers("kimura takuya smap")
+    "Kimura Takuya Smap"
+    >>> to_uppers("smap")
+    "Smap"
+    各単語をリスト化し、2重リストに。
+    単語の頭文字のインデックスをしらべ、大文字に変換。
+    strに戻して返す。
+    """
+    lowercases = "abcdefghijklmnopqrstuvwxyz"
+    capitals = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    s = split_str_list(s)
+    ret = s
+    for i in range(len(s)):
+        ret[i][0] = capitals[lowercases.index(s[i][0])]
+    return " ".join(["".join(i) for i in s])
 
 
 def max2(x, y):
@@ -1828,7 +1891,13 @@ def fast_fibo(n: int):
 
 def fibo_over(n):
     """
-    
+    フィボナッチ数がnより大きくなるとき、そのフィボナッチ数は何番目か返す。
+    >>> fibo_over(10)
+    7
+    >>> fibo_over(200)
+    13
+    96番とおなじように。
+    超えたとき、リストの長さを返す。
     """
     if n <= 1:
         return n
