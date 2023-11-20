@@ -613,6 +613,17 @@ def max3(x, y, z):
     """
     return max2(max2(x, y), z)
 
+def max4(x, y, z, w):
+    """
+    4つの数の最大値を返す関数。
+    >>> max3(0, 1, 2, 0)
+    2
+    >>> max3(-2, 0, -1, -1)
+    0
+    xとyの最大値をmax2を使って求め、それとz, wの大きい方を返せばいいよね。
+    """
+    return max2(max2(x, y), max2(z, w))
+
 
 def max_in_list(xs):
     """
@@ -1383,6 +1394,13 @@ def factor_integer(n: int):
     if n != 1:
         ret.append(n)
     return ret
+
+
+def p72(x):
+    """
+    p72で作った関数のテスト代わり。
+    """
+    return max(factor_integer(x))
 
 
 def times_n_rec(xs, n):

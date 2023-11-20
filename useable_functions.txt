@@ -1,3 +1,5 @@
 #include 16 - is_even
 #include 72 - factor_integer
 #include 66 - is_prime
+#include 89 - expand
+#include 88 - compress
